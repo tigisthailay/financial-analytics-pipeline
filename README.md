@@ -1,1 +1,1 @@
-# -financial-analytics-pipeline
+# Financial-analytics-pipeline
