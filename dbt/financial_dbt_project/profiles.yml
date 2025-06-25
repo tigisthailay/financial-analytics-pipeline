@@ -1,0 +1,12 @@
+# dbt/profiles.yml
+financial_dbt_project:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: dbt_postgres
+      user: tegisty
+      password: Mom2127561213!
+      port: 5432
+      dbname: rate_db
+      schema: rate
