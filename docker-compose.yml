@@ -95,19 +95,26 @@ services:
       - kafkanet
     depends_on:
       - broker
-  # dbt:
-  #   image: ghcr.io/dbt-labs/dbt-postgres:1.7.0  # or latest
-  #   container_name: dbt_service
-  #   depends_on:
-  #     - postgres
-  #   volumes:
-  #     - ./dbt:/usr/app  # This is your local dbt project
-  #   working_dir: /usr/app
-  #   command: ["bash"]  # Start in interactive shell (or change to dbt run for automation)
-  #   networks:
-  #     kafkanet:
-  #       ipv4_address: 172.25.0.15
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-postgres:1.6.2
+    container_name: dbt
+    depends_on:
+      - dbt_postgres
+    volumes:
+      - ./dbt:/usr/app
+    working_dir: /usr/app
+    entrypoint: ["/bin/bash", "-c"]  # 👈 override default entrypoint to use bash
 
+    command: >
+      sh -c "dbt deps &&
+            dbt seed --profiles-dir . &&
+            dbt run --profiles-dir . &&
+            dbt test --profiles-dir ."
+            
+    environment:
+      DBT_PROFILES_DIR: /usr/app
+    networks:
+      - kafkanet
 
 networks:
   kafkanet:
