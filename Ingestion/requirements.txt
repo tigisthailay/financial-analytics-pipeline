@@ -1,0 +1,7 @@
+kafka-python
+python-dotenv
+logger
+wasabi
+forex-python
+requests
+rich

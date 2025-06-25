@@ -1,0 +1,125 @@
+# version: "3.7"
+
+services:
+  zookeeper:
+    image: zookeeper:3.6.1
+    container_name: zookeeper
+    expose:
+      - "2181"
+    volumes:
+      - kafka_zookeeper:/opt/zookeeper-3.6.1/data
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.11
+
+  broker:
+    image: wurstmeister/kafka:2.12-2.2.0
+    container_name: brooker
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 172.25.0.11:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.25.0.12:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - kafka_broker:/opt/kafka_2.12-2.2.0/logs
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.12
+    depends_on:
+      - zookeeper
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    hostname: kafka-ui
+    container_name: kafka-ui
+    depends_on:
+      - broker
+    ports:
+      - "8083:8080" # Map the Kafka UI to localhost:8083
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "local-cluster"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "172.25.0.12:9092"
+      KAFKA_CLUSTERS_0_ZOOKEEPER: "172.25.0.11:2181" # Optional if using Zookeeper
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.14
+
+  dbt_postgres:
+    image: postgres:13
+    container_name: dbt_postgres
+    # restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d  # Run custom SQL on container init
+    networks:
+      - kafkanet
+
+  ingestor:
+    build:
+      context: ./Ingestion
+      dockerfile: Dockerfile
+    container_name: DataIngestor
+    # restart: always
+    env_file:
+      - .env
+    environment:
+      FINNHUB_TOKEN: ${ACCESS_KEY}
+    networks:
+      - kafkanet
+    depends_on:
+      - broker
+  
+  spark_streaming:
+    build:
+      context: ./Spark_streaming
+      dockerfile: Dockerfile
+    container_name: SparkStreaming
+    # restart: always
+    env_file:
+      - .env
+    networks:
+      - kafkanet
+    depends_on:
+      - broker
+  # dbt:
+  #   image: ghcr.io/dbt-labs/dbt-postgres:1.7.0  # or latest
+  #   container_name: dbt_service
+  #   depends_on:
+  #     - postgres
+  #   volumes:
+  #     - ./dbt:/usr/app  # This is your local dbt project
+  #   working_dir: /usr/app
+  #   command: ["bash"]  # Start in interactive shell (or change to dbt run for automation)
+  #   networks:
+  #     kafkanet:
+  #       ipv4_address: 172.25.0.15
+
+
+networks:
+  kafkanet:
+    name: kafkanet
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+
+volumes:
+  kafka_zookeeper:
+  kafka_broker:
+  pgdata:
+  
