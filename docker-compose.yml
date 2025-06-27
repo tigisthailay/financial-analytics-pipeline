@@ -95,26 +95,42 @@ services:
       - kafkanet
     depends_on:
       - broker
+  # dbt:
+  #   image: ghcr.io/dbt-labs/dbt-postgres:1.6.2
+  #   container_name: dbt
+  #   depends_on:
+  #     - dbt_postgres
+  #   volumes:
+  #     - ./dbt:/usr/app
+  #   working_dir: /usr/app
+  #   entrypoint: ["/bin/bash", "-c"]  # 👈 override default entrypoint to use bash
+
+  #   command: >
+  #     sh -c "dbt deps &&
+  #           dbt seed --profiles-dir . &&
+  #           dbt run --profiles-dir . &&
+  #           dbt test --profiles-dir ."
+            
+  #   environment:
+  #     DBT_PROFILES_DIR: /usr/app
+  #   networks:
+  #     - kafkanet
+
   dbt:
-    image: ghcr.io/dbt-labs/dbt-postgres:1.6.2
+    build:
+      context: ./dbt_project/financial_dbt_project
+      dockerfile: Dockerfile
     container_name: dbt
+    environment:
+      DBT_PROFILES_DIR: /app
+    volumes:
+      - ./dbt_project/financial_dbt_project:/app
     depends_on:
       - dbt_postgres
-    volumes:
-      - ./dbt:/usr/app
-    working_dir: /usr/app
-    entrypoint: ["/bin/bash", "-c"]  # 👈 override default entrypoint to use bash
-
-    command: >
-      sh -c "dbt deps &&
-            dbt seed --profiles-dir . &&
-            dbt run --profiles-dir . &&
-            dbt test --profiles-dir ."
-            
-    environment:
-      DBT_PROFILES_DIR: /usr/app
     networks:
       - kafkanet
+    # command: /bin/bash -c "dbt run && dbt test"
+    # command: ["run"]
 
 networks:
   kafkanet:

@@ -1,0 +1,12 @@
+financial_dbt_project:
+  outputs:
+    dev:
+      dbname: rate_db
+      host: dbt_postgres
+      pass: Mom2127561213!
+      port: 5432
+      schema: rate
+      threads: 2
+      type: postgres
+      user: tegisty
+  target: dev

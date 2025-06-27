@@ -1,0 +1,30 @@
+[0m15:18:27.796383 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x71d808962560>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x71d807b070d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x71d807b07ac0>]}
+
+
+============================== 15:18:27.801284 | 0325e9cb-b5b8-436b-902f-f742beb7dac5 ==============================
+[0m15:18:27.801284 [info ] [MainThread]: Running with dbt=1.9.4
+[0m15:18:27.802354 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'profiles_dir': '/home/tegisty/DataEngineering/financial-analytics-pipeline/dbt_project', 'log_path': 'logs', 'version_check': 'True', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'static_parser': 'True', 'invocation_command': 'dbt init financial_dbt_project', 'log_format': 'default', 'target_path': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m15:18:27.819795 [debug] [MainThread]: Starter project path: /home/tegisty/.local/lib/python3.10/site-packages/dbt/include/starter_project
+[0m15:18:27.826566 [info ] [MainThread]: 
+Your new dbt project "financial_dbt_project" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m15:18:27.829173 [info ] [MainThread]: Setting up your profile.
+[0m15:21:35.064432 [info ] [MainThread]: Profile financial_dbt_project written to /home/tegisty/DataEngineering/financial-analytics-pipeline/dbt_project/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+[0m15:21:35.074844 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 187.37326, "process_in_blocks": "52920", "process_kernel_time": 0.202291, "process_mem_max_rss": "97948", "process_out_blocks": "88", "process_user_time": 2.003187}
+[0m15:21:35.077782 [debug] [MainThread]: Command `dbt init` succeeded at 15:21:35.077303 after 187.38 seconds
+[0m15:21:35.079184 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x71d808962560>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x71d8079953c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x71d807b070d0>]}
+[0m15:21:35.080059 [debug] [MainThread]: Flushing usage events
+[0m15:21:36.084881 [debug] [MainThread]: An error was encountered while trying to flush usage events

@@ -1,0 +1,72 @@
+# dbt schema (with data quality tests for both models)
+version: 2
+
+models:
+  - name: stg_exchange_rates
+    description: "Cleans raw exchange rate data from rate.exchange_rates for staging."
+    columns:
+      - name: source
+        description: "Source of the exchange rate data."
+        tests:
+          - not_null
+
+      - name: ts
+        description: "Timestamp when the rate was recorded."
+        tests:
+          - not_null
+
+      - name: base_currency
+        description: "The base currency in the exchange rate pair."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['USD', 'EUR', 'GBP'] 
+
+      - name: target_currency
+        description: "The target currency in the exchange rate pair."
+        tests:
+          - not_null
+
+      - name: rate
+        description: "The exchange rate value."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_incremental_exchange_rates')
+              field: rate  # Optional integrity check
+
+  - name: stg_incremental_exchange_rates
+    description: "Incremental model that tracks new exchange rate entries over time."
+    columns:
+      - name: hash_key
+        description: "MD5 hash used as a unique key for incremental updates."
+        tests:
+          - not_null
+          - unique
+
+      - name: source
+        description: "Data source of the exchange rate."
+        tests:
+          - not_null
+
+      - name: ts
+        description: "Timestamp parsed as PostgreSQL timestamp."
+        tests:
+          - not_null
+
+      - name: base_currency
+        description: "Base currency of the rate."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['USD', 'EUR', 'GBP']
+
+      - name: target_currency
+        description: "Target currency of the rate."
+        tests:
+          - not_null
+
+      - name: rate
+        description: "Exchange rate value."
+        tests:
+          - not_null
